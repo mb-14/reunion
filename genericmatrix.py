@@ -227,8 +227,8 @@ ValueError: matrix not invertible
             fillMode = lambda x,y: q(self.eq(x,y),self.identityElement,
                                      self.zeroElement)
 
-        for i in range(self.rows):
-            self.data.append(map(fillMode,[i]*self.cols,range(self.cols)))
+        for i in xrange(self.rows):
+            self.data.append(map(fillMode,[i]*self.cols,xrange(self.cols)))
 
     def MakeSimilarMatrix(self,size,fillMode):
         """
@@ -263,19 +263,21 @@ ValueError: matrix not invertible
             raise ValueError, "dimension mismatch"
         result = self.MakeSimilarMatrix((self.rows,other.cols),'z')
                                
-        for i in range(self.rows):
-            for j in range(other.cols):
+        for i in xrange(self.rows):
+            for j in xrange(other.cols):
                 result.data[i][j] = reduce(self.add,
                                            map(self.mul,self.data[i],
                                                other.GetColumn(j)))
         return result
 
+    
+
     def __add__(self,other):
         if (self.cols != other.rows):
             raise ValueError, "dimension mismatch"
         result = self.MakeSimilarMatrix(size=self.Size(),fillMode='z')
-        for i in range(self.rows):
-            for j in range(other.cols):
+        for i in xrange(self.rows):
+            for j in xrange(other.cols):
                 result.data[i][j] = self.add(self.data[i][j],other.data[i][j])
         return result
     
@@ -283,8 +285,8 @@ ValueError: matrix not invertible
         if (self.cols != other.cols or self.rows != other.rows):
             raise ValueError, "dimension mismatch"
         result = self.MakeSimilarMatrix(size=self.Size(),fillMode='z')
-        for i in range(self.rows):
-            for j in range(other.cols):
+        for i in xrange(self.rows):
+            for j in xrange(other.cols):
                 result.data[i][j] = self.sub(self.data[i][j],
                                              other.data[i][j])
         return result
@@ -325,9 +327,9 @@ ValueError: matrix not invertible
     def Transpose(self):
         oldData = self.data
         self.data = []
-        for r in range(self.cols):
+        for r in xrange(self.cols):
             self.data.append([])
-            for c in range(self.rows):
+            for c in xrange(self.rows):
                 self.data[r].append(oldData[c][r])
         rows = self.rows
         self.rows = self.cols
@@ -354,7 +356,7 @@ ValueError: matrix not invertible
         result = self.MakeSimilarMatrix((rowEnd-rowStart+1,colEnd-colStart+1),
                                         'e')
 
-        for i in range(rowStart,rowEnd+1):
+        for i in xrange(rowStart,rowEnd+1):
             result.data.append(list(self.data[i][colStart:(colEnd+1)]))
 
         return result
@@ -369,7 +371,7 @@ ValueError: matrix not invertible
         result = self.MakeSimilarMatrix((self.rows-(rowEnd-rowStart),
                                          self.cols-(colEnd-colStart)),'e')
 
-        for i in range(0,rowStart) + range(rowEnd,self.rows):
+        for i in xrange(0,rowStart) + xrange(rowEnd,self.rows):
             result.data.append(list(self.data[i][0:colStart] +
                                     self.data[i][colEnd:]))
 
@@ -387,7 +389,7 @@ ValueError: matrix not invertible
         Multiply row r by m starting at optional column start (default 0).
         """
         row = self.data[r]
-        for i in range(start,self.cols):
+        for i in xrange(start,self.cols):
             row[i] = self.mul(row[i],m)
 
     def AddRow(self,i,j):
@@ -400,7 +402,7 @@ ValueError: matrix not invertible
         """
         Add column i to column j.
         """
-        for r in range(self.rows):
+        for r in xrange(self.rows):
             self.data[r][j] = self.add(self.data[r][i],self.data[r][j])
 
     def MulAddRow(self,m,i,j):
@@ -423,19 +425,19 @@ ValueError: matrix not invertible
         """
         if (self.cols != len(colVec)):
             raise ValueError, 'dimension mismatch'
-        result = range(self.rows)
-        for r in range(self.rows):
+        result = xrange(self.rows)
+        for r in xrange(self.rows):
             result[r] = reduce(self.add,map(self.mul,self.data[r],colVec))
         return result
 
     def FindRowLeader(self,startRow,c):
-        for r in range(startRow,self.rows):
+        for r in xrange(startRow,self.rows):
             if (not self.eq(self.zeroElement,self.data[r][c])):
                 return r
         return -1
 
     def FindColLeader(self,r,startCol):
-        for c in range(startCol,self.cols):
+        for c in xrange(startCol,self.cols):
             if (not self.equalsZero(self.data[r][c])):
                 return c
         return -1    
@@ -469,7 +471,7 @@ ValueError: matrix not invertible
                 return (rowIndex, colIndex)
             divisor = self.div(self.identityElement,
                                self.data[rowIndex][colIndex])
-            for k in range(rowIndex+1,self.rows):
+            for k in xrange(rowIndex+1,self.rows):
                 nextTerm = self.data[k][colIndex]
                 if (self.zeroElement != nextTerm):
                     multiple = self.mul(divisor,self.sub(self.zeroElement,
@@ -543,7 +545,7 @@ ValueError: matrix not invertible
         if (resultInv == ''):
             resultInv = self.MakeSimilarMatrix(self.Size(),'i')
         lastCol = min(self.rows,self.cols)
-        for colIndex in range(0,lastCol):
+        for colIndex in xrange(0,lastCol):
             if (self.zeroElement == self.data[colIndex][colIndex]):
                 raise ValueError, 'matrix not invertible'
             divisor = self.div(self.identityElement,
@@ -551,7 +553,7 @@ ValueError: matrix not invertible
             if (self.identityElement != divisor):
                 self.MulRow(colIndex,divisor,colIndex)
                 resultInv.MulRow(colIndex,divisor)
-            for rowToElim in range(0,colIndex):
+            for rowToElim in xrange(0,colIndex):
                 multiple = self.sub(self.zeroElement,
                                     self.data[rowToElim][colIndex])
                 self.MulAddRow(multiple,colIndex,rowToElim)
@@ -584,7 +586,7 @@ ValueError: matrix not invertible
         result = self.MakeSimilarMatrix(self.Size(),'i')
         workingCopy.LowerGaussianElim(result)
         det = self.identityElement
-        for i in range(self.rows):
+        for i in xrange(self.rows):
             det = det * workingCopy.data[i][i]
         return det
 
@@ -689,19 +691,19 @@ ValueError: matrix not invertible
         (L,U,P) = self.LUP()
         Pb = P.LeftMulColumnVec(b)
         y = [0]*len(Pb)
-        for row in range(L.rows):
+        for row in xrange(L.rows):
             y[row] = Pb[row]
-            for i in range(row+1,L.rows):
+            for i in xrange(row+1,L.rows):
                 Pb[i] = L.sub(Pb[i],L.mul(L[i,row],Pb[row]))
         x = [0]*self.cols
         curRow = self.rows-1
 
-        for curRow in range(len(y)-1,-1,-1):
+        for curRow in xrange(len(y)-1,-1,-1):
             col = U.FindColLeader(curRow,0)
             assert col > -1
             x[col] = U.div(y[curRow],U[curRow,col])
             y[curRow] = x[col]
-            for i in range(0,curRow):
+            for i in xrange(0,curRow):
                 y[i] = U.sub(y[i],U.mul(U[i,col],y[curRow]))
         return x
 
@@ -740,22 +742,22 @@ class GenericMatrixTester:
     def MatAbs(self,m):
         r = -1
         (N,M) = m.Size()
-        for i in range(0,N):
-            for j in range(0,M):
+        for i in xrange(0,N):
+            for j in xrange(0,M):
                 if (abs(m[i,j]) > r):
                     r = abs(m[i,j])
         return r
 
     def RandomInverseTest(self,s,n):
         ident = GenericMatrix(size=(s,s),fillMode='i')
-        for i in range(n):
+        for i in xrange(n):
             m = self.MakeRandom((s,s))
             assert self.MatAbs(ident - m * m.Inverse()) < 1e-6, (
                 'offender = ' + `m`)
 
     def RandomLUPTest(self,s,n):
         ident = GenericMatrix(size=(s,s),fillMode='i')
-        for i in range(n):
+        for i in xrange(n):
             m = self.MakeRandom((s,s))
             (l,u,p) = m.LUP()
             assert self.MatAbs(p*m - l*u) < 1e-6, 'offender = ' + `m`
@@ -766,13 +768,13 @@ class GenericMatrixTester:
             return
         extraEquations=3
         
-        for i in range(n):
+        for i in xrange(n):
             m = self.MakeRandom((s,s+extraEquations))
-            for j in range(extraEquations):
-                colToKill = random.randrange(s+extraEquations)
-                for r in range(m.rows):
+            for j in xrange(extraEquations):
+                colToKill = random.randxrange(s+extraEquations)
+                for r in xrange(m.rows):
                     m[r,colToKill] = 0.0
-            b = map(lambda x: random.random(), range(s))
+            b = map(lambda x: random.random(), xrange(s))
             x = m.Solve(b)
             z = m.LeftMulColumnVec(x)
             diff = reduce(lambda xx,yy:xx+yy, map(lambda aa,bb:abs(aa-bb),b,z))
@@ -780,7 +782,7 @@ class GenericMatrixTester:
                                  + '\nb = ' + `b` + '\ndiff = ' + `diff`)
 
     def RandomDetTest(self,s,n):
-        for i in range(n):
+        for i in xrange(n):
             m1 = self.MakeRandom((s,s))
             m2 = self.MakeRandom((s,s))
             prod = m1 * m2
